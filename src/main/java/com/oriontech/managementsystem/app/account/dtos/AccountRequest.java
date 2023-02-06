@@ -1,5 +1,6 @@
 package com.oriontech.managementsystem.app.account.dtos;
 
+import com.oriontech.managementsystem.app.account.enitities.Account;
 import com.oriontech.managementsystem.app.account.enums.EAccountRole;
 import com.oriontech.managementsystem.app.account.enums.EAccountStatus;
 
@@ -8,8 +9,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Data;
 
+@Data
+@Builder
 public class AccountRequest {
+
     @NotBlank(message = "Invalid Name: Name is not empty")
     @Size(min = 3, max = 30, message = "Invalid Name: Must be of 3 - 30 characters")
     private String fullname;
@@ -26,4 +32,14 @@ public class AccountRequest {
     private EAccountStatus status;
     @NotNull
     private EAccountRole role;
+
+    public static Account accountRequestToAccount(AccountRequest accountRequest) {
+        return Account.builder().fullname(accountRequest.fullname)
+                .phoneNumber(accountRequest.phoneNumber)
+                .email(accountRequest.email)
+                .password(accountRequest.password)
+                .role(accountRequest.role)
+                .status(accountRequest.status)
+                .build();
+    }
 }

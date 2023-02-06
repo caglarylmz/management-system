@@ -4,28 +4,26 @@ package com.oriontech.managementsystem.app.account.service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
+import com.oriontech.managementsystem.app.account.dtos.AccountRequest;
 import com.oriontech.managementsystem.app.account.dtos.AccountResponse;
-import com.oriontech.managementsystem.app.account.enitities.Account;
 import com.oriontech.managementsystem.app.account.enums.EAccountStatus;
 import com.oriontech.managementsystem.core.utils.AppResponse;
 
 @Repository
 public interface IAccountService {
 
-    //For other service
-    AccountResponse getAccountByEmail(String email);
-
     boolean checkExistAccountByEmail(String email);
 
-    AccountResponse saveAccount(Account account);
+    AccountResponse getAccountByEmail(String email);
 
-    AccountResponse updateAccount(Account account);
+    AccountResponse saveAccountforSignUp(AccountRequest accountRequest);
 
-    AccountResponse updateAccountByEmail(String email);
+    ResponseEntity<AppResponse> saveAccount(AccountRequest accountRequest);
 
-    boolean deleteAccount(Account account);
+    ResponseEntity<AppResponse> updateAccount(AccountRequest accountRequest);
 
-    // For Account Controller
+    ResponseEntity<AppResponse> deleteAccount(AccountRequest accountRequest);
+
     ResponseEntity<AppResponse> getAccounts();
 
     ResponseEntity<AppResponse> getAccountsByStatus(EAccountStatus status);

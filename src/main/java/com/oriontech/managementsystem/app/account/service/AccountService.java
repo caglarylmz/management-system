@@ -5,14 +5,16 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.oriontech.managementsystem.app.account.dtos.AccountRequest;
 import com.oriontech.managementsystem.app.account.dtos.AccountResponse;
 import com.oriontech.managementsystem.app.account.enitities.Account;
 import com.oriontech.managementsystem.app.account.enums.EAccountStatus;
 import com.oriontech.managementsystem.app.account.repository.AccountRepository;
+import com.oriontech.managementsystem.core.constants.ErrorMessages;
 import com.oriontech.managementsystem.core.exceptions.UserNotFoundException;
-import com.oriontech.managementsystem.core.jwt.JwtAuthFilter;
 import com.oriontech.managementsystem.core.utils.AppResponse;
 import com.oriontech.managementsystem.core.utils.EProcessStatus;
 
@@ -23,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class AccountService implements IAccountService {
 
     private final AccountRepository repository;
-    private final JwtAuthFilter jwtAuthFilter;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public AccountResponse getAccountByEmail(String userEmail) {
@@ -40,33 +42,43 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public AccountResponse saveAccount(Account account) {
+    public AccountResponse saveAccountforSignUp(AccountRequest accountRequest) {
+        accountRequest.setPassword(passwordEncoder.encode(accountRequest.getPassword()));
+        var account = AccountRequest.accountRequestToAccount(accountRequest);
         return AccountResponse.accountResponseFromAccount(repository.save(account));
     }
 
     @Override
-    public AccountResponse updateAccount(Account account) {
+    public ResponseEntity<AppResponse> updateAccount(AccountRequest request) {
+        try {
+            request.setPassword(passwordEncoder.encode(request.getPassword()));
+            var account = repository.save(AccountRequest.accountRequestToAccount(request));
+            return new ResponseEntity<AppResponse>(AppResponse.builder()
+                    .status(EProcessStatus.SUCCESS)
+                    .message("Update Account process successfully")
+                    .response(account)
+                    .build(), HttpStatus.OK);
 
-        return AccountResponse.accountResponseFromAccount(repository.save(account));
+        } catch (Exception e) {
+            return new ResponseEntity<AppResponse>(AppResponse.builder()
+                    .status(EProcessStatus.FAIL)
+                    .message("Update Account process unsuccessfully")
+                    .response(ErrorMessages.ACCOUNT_NOT_FOUND)
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @Override
-    public AccountResponse updateAccountByEmail(String email) {
-        var account = repository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User Not Found"));
-        return saveAccount(account);
-    }
-
-    @Override
-    public boolean deleteAccount(Account user) {
+    public ResponseEntity<AppResponse> deleteAccount(AccountRequest request) {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
 
     @Override
     public ResponseEntity<AppResponse> getAccounts() {
         try {
 
-           
             List<AccountResponse> aResponses = new ArrayList<>();
             List<Account> accounts = repository.findAll();
 
@@ -76,7 +88,6 @@ public class AccountService implements IAccountService {
                     .message("All Accounts")
                     .response(aResponses)
                     .build(), HttpStatus.OK);
-        
 
         } catch (Exception e) {
             return new ResponseEntity<AppResponse>(AppResponse.builder()
@@ -113,6 +124,12 @@ public class AccountService implements IAccountService {
                     .build(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
+    }
+
+    @Override
+    public ResponseEntity<AppResponse> saveAccount(AccountRequest accountRequest) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

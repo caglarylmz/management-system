@@ -20,7 +20,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping()
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<AppResponse> getAllAccounts() {
         return accountService.getAccounts();
     }

@@ -19,7 +19,8 @@ public class AccountResponse {
     private EAccountRole role;
 
     public static AccountResponse accountResponseFromAccount(Account account) {
-        return AccountResponse.builder().fullname(account.getFullname())
+        return AccountResponse.builder()
+                .fullname(account.getFullname())
                 .phoneNumber(account.getPhoneNumber())
                 .email(account.getEmail())
                 .role(account.getRole())

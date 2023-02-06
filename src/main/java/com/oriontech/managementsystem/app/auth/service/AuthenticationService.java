@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.oriontech.managementsystem.app.account.enitities.Account;
+import com.oriontech.managementsystem.app.account.dtos.AccountRequest;
 import com.oriontech.managementsystem.app.account.enums.EAccountRole;
 import com.oriontech.managementsystem.app.account.enums.EAccountStatus;
 import com.oriontech.managementsystem.app.account.service.AccountService;
@@ -41,7 +41,7 @@ public class AuthenticationService implements IAuthenticationService {
         log.info("signup -> : /auth/signup");
         try {
             if (!accountService.checkExistAccountByEmail(request.getEmail())) {
-                var user = accountService.saveAccount(Account.builder()
+                var user = accountService.saveAccountforSignUp(AccountRequest.builder()
                         .fullname(request.getFullname())
                         .email(request.getEmail())
                         .password(passwordEncoder.encode(request.getPassword()))
